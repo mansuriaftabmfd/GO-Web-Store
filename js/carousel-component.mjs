@@ -4,9 +4,13 @@ export class CarouselComponent extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    this.isPortrait = false;
+    this.PORTRAIT_WIDTH = 250;
+    this.LANDSCAPE_WIDTH = 500;
   }
 
-  connectedCallback() {
+  async connectedCallback() {
+    await this.checkImageOrientation();
     this.render();
     this.setupCarousel();
   }
@@ -37,7 +41,9 @@ export class CarouselComponent extends HTMLElement {
           }
 
           .carousel-item {
-            flex: 0 0 500px;
+            flex: 0 0 ${
+              this.isPortrait ? this.PORTRAIT_WIDTH : this.LANDSCAPE_WIDTH
+            }px;
             max-inline-size: 100%;
             scroll-snap-align: center;
             display: flex;
@@ -93,6 +99,33 @@ export class CarouselComponent extends HTMLElement {
     return [data.carousel_assets, data.base_url];
   }
 
+  async checkImageOrientation() {
+    const assets = this.carouselAssets[0];
+    const baseUrl = this.carouselAssets[1];
+
+    const firstWebpImage = assets.find((asset) => asset.endsWith(".webp"));
+
+    if (firstWebpImage) {
+      const imageUrl = `https://raw.githubusercontent.com/LiquidGalaxyLAB/Data/refs/heads/main${
+        baseUrl + firstWebpImage
+      }`;
+
+      try {
+        const img = new Image();
+        await new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject();
+          img.src = imageUrl;
+        });
+
+        this.isPortrait = img.height > img.width;
+      } catch (error) {
+        console.warn("Could not load image for orientation check:", error);
+        this.isPortrait = false;
+      }
+    }
+  }
+
   setupCarousel() {
     const carousel = this.shadowRoot.querySelector(".carousel");
     const prevButton = this.shadowRoot.querySelector(".prev");
@@ -105,7 +138,9 @@ export class CarouselComponent extends HTMLElement {
   scrollToNext(carousel) {
     const prevButton = this.shadowRoot.querySelector(".prev");
     const nextButton = this.shadowRoot.querySelector(".next");
-    const itemWidth = 500;
+    const itemWidth = this.isPortrait
+      ? this.PORTRAIT_WIDTH
+      : this.LANDSCAPE_WIDTH;
     const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
     if (carousel.scrollLeft + itemWidth >= maxScrollLeft)
       nextButton.setAttribute("disabled", "true");
@@ -117,7 +152,9 @@ export class CarouselComponent extends HTMLElement {
   scrollToPrev(carousel) {
     const prevButton = this.shadowRoot.querySelector(".prev");
     const nextButton = this.shadowRoot.querySelector(".next");
-    const itemWidth = 500;
+    const itemWidth = this.isPortrait
+      ? this.PORTRAIT_WIDTH
+      : this.LANDSCAPE_WIDTH;
     if (carousel.scrollLeft <= 0) prevButton.setAttribute("disabled", "true");
     nextButton?.removeAttribute("disabled");
 

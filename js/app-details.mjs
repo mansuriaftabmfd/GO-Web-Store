@@ -36,6 +36,18 @@ export class AppDetailsComponent extends HTMLElement {
     };
   }
 
+  processContent(content) {
+    let processedContent = content.replace(/\n/g, "<br>");
+    const githubUrlRegex =
+      /(https:\/\/github\.com\/LiquidGalaxyLAB\/)([^\s<>"']+)/g;
+    processedContent = processedContent.replace(
+      githubUrlRegex,
+      '<md-assist-chip label="$2" href="$1$2" target="_blank"></md-assist-chip>'
+    );
+
+    return processedContent;
+  }
+
   render() {
     const appData = this.data;
     if (!appData) {
@@ -78,14 +90,14 @@ export class AppDetailsComponent extends HTMLElement {
           margin: 0;
         }
 
-        md-assist-chip {
+        .type {
           text-transform: capitalize;
         }
       </style>
   
       <div>
         <h2>About ${name}</h2>
-        <md-assist-chip label="${type}" href="./index.html?app=${type}"></md-assist-chip>
+        <md-assist-chip class="type" label="${type}" href="./index.html?app=${type}"></md-assist-chip>
         <div class="info">
           <p><strong><md-icon>schedule</md-icon></strong> ${date}</p>
           ${
@@ -96,7 +108,7 @@ export class AppDetailsComponent extends HTMLElement {
           <p><strong><md-icon>history</md-icon></strong>Version ${version}</p>
         </div>
         <div class="content">
-          <p>${content.replace(/\n/g, "<br>")}</p>
+          <p>${this.processContent(content)}</p>
         </div>
       </div>
     `;
