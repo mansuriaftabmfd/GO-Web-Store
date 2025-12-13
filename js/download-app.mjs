@@ -9,20 +9,20 @@ export class DownloadApp extends HTMLElement {
     const storedData = JSON.parse(localStorage.getItem("store"));
     const data = storedData.find((item) => item.name === getQueryParam("name"));
     this.render(data);
-    const installButton = this.shadowRoot.querySelector("md-filled-button");
+    const downloadButton = this.shadowRoot.querySelector("md-filled-button");
     const progressBar = this.shadowRoot.querySelector("md-circular-progress");
     const progressText = this.shadowRoot.querySelector(".progress-text");
     const mainElement = this.shadowRoot.querySelector(".main");
 
     if (data.type === "PWA" && data.pwa_link) {
-      installButton.setAttribute("href", data.pwa_link);
-      installButton.setAttribute("target", "_blank");
-      installButton.textContent = "Open";
+      downloadButton.setAttribute("href", data.pwa_link);
+      downloadButton.setAttribute("target", "_blank");
+      downloadButton.textContent = "Open";
     } else {
-      installButton.addEventListener("click", async () => {
+      downloadButton.addEventListener("click", async () => {
         if ("setAppBadge" in navigator) navigator.setAppBadge();
-        installButton.setAttribute("disabled", "true");
-        installButton.textContent = "Installing...";
+        downloadButton.setAttribute("disabled", "true");
+        downloadButton.textContent = "Downloading...";
         const url = `https://raw.githubusercontent.com/LiquidGalaxyLAB/Data/refs/heads/main${data.base_url}${data.file}`;
         const response = await fetch(url);
         const contentLength = response.headers.get("content-length");
@@ -31,8 +31,8 @@ export class DownloadApp extends HTMLElement {
           alert(
             "Unable to fetch content length. Progress tracking may not work."
           );
-          installButton.removeAttribute("disabled");
-          installButton.textContent = "Install";
+          downloadButton.removeAttribute("disabled");
+          downloadButton.textContent = "Download";
           if ("setAppBadge" in navigator) navigator.setAppBadge(0);
           return;
         }
@@ -70,8 +70,8 @@ export class DownloadApp extends HTMLElement {
         a.click();
 
         URL.revokeObjectURL(downloadUrl);
-        installButton.removeAttribute("disabled");
-        installButton.textContent = "Install";
+        downloadButton.removeAttribute("disabled");
+        downloadButton.textContent = "Download";
         if ("setAppBadge" in navigator) navigator.setAppBadge(0);
       });
     }
@@ -199,7 +199,7 @@ export class DownloadApp extends HTMLElement {
       </div>
       <div class="button">
         <md-filled-button>${
-          data.type === "PWA" && data.pwa_link ? "Open" : "Install"
+          data.type === "PWA" && data.pwa_link ? "Open" : "Download"
         }</md-filled-button>
       </div>
     `;
