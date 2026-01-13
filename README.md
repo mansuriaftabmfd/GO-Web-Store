@@ -142,6 +142,23 @@ Contributions to the GO Web Store and its underlying technology are welcome! To 
 3. Open a pull request with your changes.  
 
 ---
+## 🛠️ Local Development Setup
+1. Fork the project.
+2. Clone your fork: `git clone https://github.com/your-username/GO-Web-Store.git`
+3. Open `index.html` in your browser (Live Server extension in VS Code is recommended).
+
+## 📂 Folder Structure
+- `assets/`: Images and media.
+- `js/`: Application logic and PWA service workers.
+- `index.html`: Main landing page.
+- `manifest.json`: PWA configuration.
+
+## 🤝 Contribution Guidelines
+1. Pick an issue or create one.
+2. Create a feature branch: `git checkout -b feature-name`.
+3. Commit your changes: `git commit -m "Description of changes"`.
+4. Push to your fork and open a Pull Request.
+
 
 ## Acknowledgments  
 
